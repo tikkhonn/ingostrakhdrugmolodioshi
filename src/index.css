@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --page-bg: #f5f5f7;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --card-bg: #ffffff;
+    --card-border: #e5e5e8;
+    --header-bg: rgba(255, 255, 255, 0.88);
+    --header-border: rgba(26, 26, 26, 0.08);
+    --accent-muted: rgba(0, 102, 204, 0.1);
+    --accent-border: rgba(0, 102, 204, 0.22);
+    --modal-backdrop: rgba(0, 0, 0, 0.45);
+    --hero-gradient: linear-gradient(135deg, #0066cc 0%, #004d99 50%, #0066cc 100%);
+    --ripple: rgba(0, 102, 204, 0.35);
+
+    /* Seasonal particle colors (adjusted for visibility on light bg). */
+    --particle-snow: rgb(110 160 255);
+    --particle-spring-1: rgb(0 163 255);
+    --particle-spring-2: rgb(255 255 255);
+    --particle-autumn-1: rgb(255 153 51);
+    --particle-autumn-2: rgb(255 204 102);
+    --particle-autumn-3: rgb(255 140 0);
+    --particle-summer-p1: rgb(0 163 255);
+    --particle-summer-p2: rgb(255 255 255);
+    --particle-summer-bg1: rgba(0, 102, 204, 0.26);
+    --particle-summer-bg2: rgba(0, 163, 255, 0.16);
+    --particle-summer-ray-end: rgba(0, 163, 255, 0.38);
+  }
+
+  .dark {
+    --page-bg: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --card-bg: #1a1a1a;
+    --card-border: #2e2e32;
+    --header-bg: rgba(13, 13, 13, 0.9);
+    --header-border: rgba(255, 255, 255, 0.07);
+    --accent-muted: rgba(0, 102, 204, 0.18);
+    --accent-border: rgba(0, 163, 255, 0.35);
+    --modal-backdrop: rgba(0, 0, 0, 0.72);
+    --hero-gradient: linear-gradient(135deg, #0066cc 0%, #003366 45%, #004d99 100%);
+    --ripple: rgba(0, 163, 255, 0.4);
+
+    /* Seasonal particle colors (adjusted for visibility on dark bg). */
+    --particle-snow: rgb(235 245 255);
+    --particle-spring-1: rgb(0 163 255);
+    --particle-spring-2: rgb(255 255 255);
+    --particle-autumn-1: rgb(255 153 51);
+    --particle-autumn-2: rgb(255 204 102);
+    --particle-autumn-3: rgb(255 140 0);
+    --particle-summer-p1: rgb(0 163 255);
+    --particle-summer-p2: rgb(255 255 255);
+    --particle-summer-bg1: rgba(0, 102, 204, 0.18);
+    --particle-summer-bg2: rgba(0, 163, 255, 0.10);
+    --particle-summer-ray-end: rgba(0, 163, 255, 0.28);
+  }
+
+  html {
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  }
+
+  body {
+    @apply min-h-screen font-sans antialiased;
+    background-color: var(--page-bg);
+    color: var(--text-primary);
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  }
+
+  #root {
+    min-height: 100vh;
+    transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  }
+}
+
+@layer utilities {
+  .bg-hero-ingos {
+    background: var(--hero-gradient);
+  }
+}
