@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   RotateCcw,
   BarChart3,
+  Info,
 } from 'lucide-react';
 import { MotionButton } from '../components/MotionButton';
 import { motionTransition } from '../theme/theme';
@@ -20,7 +21,7 @@ const ROUNDS_PER_CYCLE = 12;
 
 interface GameState {
   walletBalance: number;
-  currentPhase: 'season' | 'scenario' | 'outcome' | 'cycle_summary' | 'game_over';
+  currentPhase: 'welcome' | 'season' | 'scenario' | 'outcome' | 'cycle_summary' | 'game_over';
   selectedSeason: string | null;
   insuranceBought: boolean;
   scenario: ScenarioData | null;
@@ -72,10 +73,111 @@ const seasonNames: Record<SeasonKey, string> = {
 };
 
 const seasonIcons = {
-  winter: <Snowflake className="h-16 w-16" strokeWidth={1.75} />,
-  spring: <Cloud className="h-16 w-16" strokeWidth={1.75} />,
-  summer: <Sun className="h-16 w-16" strokeWidth={1.75} />,
-  autumn: <Leaf className="h-16 w-16" strokeWidth={1.75} />,
+  winter: <Snowflake className="h-14 w-14 md:h-16 md:w-16" strokeWidth={1.75} />,
+  spring: <Cloud className="h-14 w-14 md:h-16 md:w-16" strokeWidth={1.75} />,
+  summer: <Sun className="h-14 w-14 md:h-16 md:w-16" strokeWidth={1.75} />,
+  autumn: <Leaf className="h-14 w-14 md:h-16 md:w-16" strokeWidth={1.75} />,
+};
+
+/** Тематика сезона: карточка выбора и цвета на экране сценария (без отдельного блока «палитра»). */
+const seasonThemes: Record<
+  SeasonKey,
+  {
+    tagline: string;
+    card: string;
+    iconWrap: string;
+    iconTint: string;
+    title: string;
+    decor: string;
+    scenario: {
+      storyCard: string;
+      storyText: string;
+      questionHeading: string;
+      insureBtn: string;
+      riskBtn: string;
+    };
+  }
+> = {
+  winter: {
+    tagline: 'Снег · мороз · лёд и горы',
+    card:
+      'border-sky-300/70 bg-gradient-to-br from-slate-50 via-sky-50 to-blue-200/90 text-slate-900 shadow-sky-200/50 dark:border-sky-500/35 dark:from-slate-950 dark:via-sky-950/80 dark:to-blue-950 dark:text-sky-50 dark:shadow-sky-900/40',
+    iconWrap:
+      'bg-sky-100/90 ring-sky-300/60 dark:bg-sky-900/50 dark:ring-sky-500/40',
+    iconTint: 'text-sky-600 dark:text-sky-300',
+    title: 'text-slate-900 dark:text-white',
+    decor: 'bg-sky-400/25 blur-2xl dark:bg-sky-400/15',
+    scenario: {
+      storyCard:
+        'border-sky-400/70 bg-gradient-to-br from-slate-50 via-sky-50 to-blue-100/90 dark:border-sky-500/40 dark:from-slate-950 dark:via-sky-950/90 dark:to-blue-950/80',
+      storyText: 'text-slate-900 dark:text-sky-50',
+      questionHeading: 'text-sky-800 dark:text-sky-200',
+      insureBtn:
+        'bg-sky-600 text-white shadow-md hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-400',
+      riskBtn:
+        'border-2 border-sky-400 bg-sky-50 text-sky-900 dark:border-sky-500 dark:bg-sky-950/60 dark:text-sky-100',
+    },
+  },
+  spring: {
+    tagline: 'Дождь · зелень · первое солнце',
+    card:
+      'border-emerald-300/60 bg-gradient-to-br from-emerald-50 via-green-50 to-pink-100/85 text-emerald-950 shadow-emerald-200/40 dark:border-emerald-500/30 dark:from-emerald-950/70 dark:via-green-950/60 dark:to-pink-950/35 dark:text-emerald-50 dark:shadow-emerald-900/30',
+    iconWrap:
+      'bg-emerald-100/90 ring-emerald-300/50 dark:bg-emerald-900/45 dark:ring-emerald-500/35',
+    iconTint: 'text-emerald-600 dark:text-emerald-300',
+    title: 'text-emerald-950 dark:text-white',
+    decor: 'bg-pink-300/30 blur-2xl dark:bg-pink-500/15',
+    scenario: {
+      storyCard:
+        'border-emerald-400/65 bg-gradient-to-br from-emerald-50 via-green-50 to-pink-50/90 dark:border-emerald-500/35 dark:from-emerald-950/85 dark:via-green-950/75 dark:to-pink-950/40',
+      storyText: 'text-emerald-950 dark:text-emerald-50',
+      questionHeading: 'text-emerald-800 dark:text-emerald-200',
+      insureBtn:
+        'bg-emerald-600 text-white shadow-md hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400',
+      riskBtn:
+        'border-2 border-emerald-400 bg-emerald-50 text-emerald-950 dark:border-emerald-500 dark:bg-emerald-950/50 dark:text-emerald-100',
+    },
+  },
+  summer: {
+    tagline: 'Солнце · море · песок и жара',
+    card:
+      'border-amber-400/70 bg-gradient-to-br from-amber-100 via-yellow-50 to-cyan-200/80 text-amber-950 shadow-amber-300/50 dark:border-amber-500/40 dark:from-amber-950/70 dark:via-yellow-950/55 dark:to-cyan-950/60 dark:text-amber-50 dark:shadow-amber-900/35',
+    iconWrap:
+      'bg-amber-200/90 ring-amber-400/70 dark:bg-amber-900/50 dark:ring-amber-500/45',
+    iconTint: 'text-amber-600 dark:text-amber-300',
+    title: 'text-amber-950 dark:text-white',
+    decor: 'bg-cyan-300/35 blur-2xl dark:bg-cyan-500/20',
+    scenario: {
+      storyCard:
+        'border-amber-400/75 bg-gradient-to-br from-amber-50 via-yellow-50 to-cyan-100/90 dark:border-amber-500/45 dark:from-amber-950/80 dark:via-yellow-950/65 dark:to-cyan-950/70',
+      storyText: 'text-amber-950 dark:text-amber-50',
+      questionHeading: 'text-amber-900 dark:text-amber-200',
+      insureBtn:
+        'bg-amber-600 text-white shadow-md hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-400',
+      riskBtn:
+        'border-2 border-amber-500 bg-amber-50 text-amber-950 dark:border-amber-400 dark:bg-amber-950/55 dark:text-amber-100',
+    },
+  },
+  autumn: {
+    tagline: 'Листва · дождь · ветер и слякоть',
+    card:
+      'border-orange-400/65 bg-gradient-to-br from-orange-100 via-amber-50 to-rose-100/90 text-orange-950 shadow-orange-200/45 dark:border-orange-500/35 dark:from-orange-950/65 dark:via-amber-950/55 dark:to-rose-950/45 dark:text-orange-50 dark:shadow-orange-900/30',
+    iconWrap:
+      'bg-orange-100/90 ring-orange-300/60 dark:bg-orange-900/45 dark:ring-orange-500/40',
+    iconTint: 'text-orange-600 dark:text-orange-300',
+    title: 'text-orange-950 dark:text-white',
+    decor: 'bg-amber-400/30 blur-2xl dark:bg-amber-600/20',
+    scenario: {
+      storyCard:
+        'border-orange-400/70 bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50/95 dark:border-orange-500/40 dark:from-orange-950/80 dark:via-amber-950/70 dark:to-rose-950/55',
+      storyText: 'text-orange-950 dark:text-orange-50',
+      questionHeading: 'text-orange-900 dark:text-orange-200',
+      insureBtn:
+        'bg-orange-600 text-white shadow-md hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-400',
+      riskBtn:
+        'border-2 border-orange-500 bg-orange-50 text-orange-950 dark:border-orange-400 dark:bg-orange-950/55 dark:text-orange-100',
+    },
+  },
 };
 
 function pickRandomScenario(seasonKey: string): ScenarioData {
@@ -201,7 +303,7 @@ function summarizeCycleInsights(rounds: RoundRecord[]): string[] {
 function SimulatorPage() {
   const [gameState, setGameState] = useState<GameState>({
     walletBalance: 10000,
-    currentPhase: 'season',
+    currentPhase: 'welcome',
     selectedSeason: null,
     insuranceBought: false,
     scenario: null,
@@ -342,10 +444,14 @@ function SimulatorPage() {
     });
   };
 
+  const beginFromWelcome = () => {
+    setGameState((s) => ({ ...s, currentPhase: 'season' }));
+  };
+
   const resetGame = () => {
     setGameState({
       walletBalance: 10000,
-      currentPhase: 'season',
+      currentPhase: 'welcome',
       selectedSeason: null,
       insuranceBought: false,
       scenario: null,
@@ -463,6 +569,47 @@ function SimulatorPage() {
       </div>
 
       <AnimatePresence mode="wait">
+        {gameState.currentPhase === 'welcome' && (
+          <motion.div
+            key="welcome"
+            variants={phaseVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={motionTransition.page}
+            className="mx-auto max-w-2xl"
+          >
+            <div className="relative overflow-hidden rounded-[1.25rem] border-2 border-[#0066CC]/25 bg-gradient-to-br from-[var(--accent-muted)] via-[var(--card-bg)] to-[#00A3FF]/[0.12] p-8 shadow-xl dark:border-[#00A3FF]/30 dark:from-[#003366]/25 dark:via-[var(--card-bg)] dark:to-[#0066CC]/20 md:rounded-[1.5rem] md:p-10">
+              <div
+                className="pointer-events-none absolute -left-16 top-0 h-40 w-40 rounded-full bg-[#0066CC]/15 blur-3xl dark:bg-[#00A3FF]/20"
+                aria-hidden
+              />
+              <div className="relative flex flex-col items-center text-center">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0066CC]/15 text-[#0066CC] dark:bg-[#00A3FF]/15 dark:text-[#00A3FF]">
+                  <Info className="h-9 w-9" strokeWidth={2} aria-hidden />
+                </div>
+                <h2 className="mb-4 text-2xl font-extrabold text-ingos-text-primary md:text-3xl">
+                  Сначала коротко
+                </h2>
+                <p className="mb-4 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
+                  Это игра, а не настоящий договор со страховой. Цифры здесь простые, всё быстро — так
+                  проще потренироваться.
+                </p>
+                <p className="mb-8 text-base leading-relaxed text-ingos-text-primary md:text-lg">
+                  По-настоящему всё дольше и запутаннее. Но из игры всё равно можно понять главное: что
+                  будет с деньгами, если рискнуть без страховки и если оформить полис.
+                </p>
+                <MotionButton
+                  onClick={beginFromWelcome}
+                  className="w-full rounded-btn bg-[#0066CC] py-4 text-base font-bold text-white shadow-lg md:text-lg"
+                >
+                  Ок, выбрать сезон
+                </MotionButton>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {gameState.currentPhase === 'season' && (
           <motion.div
             key="season"
@@ -475,34 +622,60 @@ function SimulatorPage() {
             <h2 className="mb-8 text-center text-xl font-bold text-ingos-text-primary md:text-2xl lg:text-3xl">
               Выбери сезон и сценарий
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2 md:gap-6">
-              {Object.entries(seasonNames).map(([key, name], i) => (
-                <motion.div
-                  key={key}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: i * motionTransition.stagger,
-                    duration: 0.35,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  <MotionButton
-                    onClick={() => handleSeasonSelect(key)}
-                    className="group flex w-full flex-col items-center rounded-card border border-ingos-border bg-ingos-card p-8 text-center shadow-sm md:p-10"
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
+              {(Object.keys(seasonNames) as SeasonKey[]).map((key, i) => {
+                const name = seasonNames[key];
+                const theme = seasonThemes[key];
+                return (
+                  <motion.div
+                    key={key}
+                    className="flex h-[300px] w-full sm:h-[320px] md:h-[340px]"
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: i * motionTransition.stagger,
+                      duration: 0.35,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                   >
-                    <div className="mb-4 text-[#0066CC] transition-transform duration-300 ease-in-out group-hover:scale-110 dark:text-[#00A3FF]">
-                      {seasonIcons[key as keyof typeof seasonIcons]}
-                    </div>
-                    <h3 className="text-2xl font-bold text-ingos-text-primary md:text-3xl">{name}</h3>
-                  </MotionButton>
-                </motion.div>
-              ))}
+                    <MotionButton
+                      onClick={() => handleSeasonSelect(key)}
+                      className={`group relative box-border flex h-full min-h-0 w-full flex-col items-center overflow-hidden rounded-[1.15rem] border-2 p-6 text-center shadow-lg sm:p-8 md:rounded-[1.25rem] md:p-10 ${theme.card}`}
+                    >
+                      <span
+                        className={`pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full ${theme.decor}`}
+                        aria-hidden
+                      />
+                      <span
+                        className={`pointer-events-none absolute -bottom-4 -left-8 h-24 w-24 rounded-full opacity-60 ${theme.decor}`}
+                        aria-hidden
+                      />
+                      <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center text-center">
+                        <div
+                          className={`mb-4 flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-2xl shadow-inner ring-2 transition-transform duration-200 ease-out group-hover:scale-110 md:h-[5rem] md:w-[5rem] ${theme.iconWrap}`}
+                        >
+                          <span className={theme.iconTint}>{seasonIcons[key]}</span>
+                        </div>
+                        <h3
+                          className={`mb-2 shrink-0 text-2xl font-extrabold md:text-3xl ${theme.title}`}
+                        >
+                          {name}
+                        </h3>
+                        <p className="max-w-[16rem] shrink-0 text-sm font-semibold leading-snug opacity-90 md:text-base">
+                          {theme.tagline}
+                        </p>
+                      </div>
+                    </MotionButton>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         )}
 
-        {gameState.currentPhase === 'scenario' && gameState.scenario && (
+        {gameState.currentPhase === 'scenario' &&
+          gameState.scenario &&
+          gameState.selectedSeason && (
           <motion.div
             key={`scenario-${gameState.scenarioNonce}`}
             variants={phaseVariants}
@@ -511,43 +684,60 @@ function SimulatorPage() {
             exit="exit"
             transition={motionTransition.page}
           >
-            <div className="mb-8 rounded-card border-2 border-[var(--accent-border)] bg-[var(--accent-muted)] p-6 md:p-10">
-              <p className="text-lg leading-relaxed text-ingos-text-primary md:text-xl">
-                {gameState.scenario.text}
-              </p>
-            </div>
+            {(() => {
+              const sk = gameState.selectedSeason as SeasonKey;
+              const sc = seasonThemes[sk].scenario;
+              return (
+                <>
+                  <div
+                    className={`mb-8 rounded-card border-2 p-6 shadow-inner md:p-10 ${sc.storyCard}`}
+                  >
+                    <p
+                      className={`text-lg leading-relaxed md:text-xl ${sc.storyText}`}
+                    >
+                      {gameState.scenario.text}
+                    </p>
+                  </div>
 
-            <h2 className="mb-8 text-center text-xl font-bold text-ingos-text-primary md:text-2xl lg:text-3xl">
-              Застраховать себя в этой ситуации?
-            </h2>
+                  <h2
+                    className={`mb-8 text-center text-xl font-bold md:text-2xl lg:text-3xl ${sc.questionHeading}`}
+                  >
+                    Застраховать себя в этой ситуации?
+                  </h2>
 
-            <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-              <MotionButton
-                onClick={() => handleInsuranceDecision(true)}
-                className="flex w-full flex-col items-center rounded-card bg-[#0066CC] p-8 text-white shadow-md md:p-10"
-              >
-                <Shield className="mb-4 h-14 w-14 md:h-16 md:w-16" strokeWidth={2} />
-                <h3 className="mb-3 text-xl font-bold md:text-2xl">Купить страховку</h3>
-                <p className="mb-4 text-base text-white/90 md:text-lg">
-                  Стоимость: {gameState.scenario.insuranceCost}₽
-                </p>
-                <p className="text-center text-sm text-white/85 md:text-base">
-                  Защита от больших расходов
-                </p>
-              </MotionButton>
-
-              <MotionButton
-                onClick={() => handleInsuranceDecision(false)}
-                className="flex w-full flex-col items-center rounded-card border-2 border-[var(--accent-border)] bg-ingos-secondary p-8 text-[#0066CC] shadow-md md:p-10 dark:bg-[#003366] dark:text-[#00A3FF]"
-              >
-                <AlertTriangle className="mb-4 h-14 w-14 md:h-16 md:w-16" strokeWidth={2} />
-                <h3 className="mb-3 text-xl font-bold md:text-2xl">Рискнуть</h3>
-                <p className="mb-4 text-base opacity-90 md:text-lg">Стоимость: 0₽</p>
-                <p className="text-center text-sm opacity-85 md:text-base">
-                  Но если что-то случится…
-                </p>
-              </MotionButton>
-            </div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+                    <div className="flex h-[220px] md:h-[240px]">
+                      <MotionButton
+                        onClick={() => handleInsuranceDecision(true)}
+                        className={`flex h-full w-full flex-col items-center justify-center rounded-card p-8 shadow-md md:p-10 ${sc.insureBtn}`}
+                      >
+                        <Shield className="mb-4 h-14 w-14 md:h-16 md:w-16" strokeWidth={2} />
+                        <h3 className="mb-3 text-xl font-bold md:text-2xl">Купить страховку</h3>
+                        <p className="mb-4 text-base opacity-95 md:text-lg">
+                          Стоимость: {gameState.scenario.insuranceCost}₽
+                        </p>
+                        <p className="text-center text-sm opacity-90 md:text-base">
+                          Защита от больших расходов
+                        </p>
+                      </MotionButton>
+                    </div>
+                    <div className="flex h-[220px] md:h-[240px]">
+                      <MotionButton
+                        onClick={() => handleInsuranceDecision(false)}
+                        className={`flex h-full w-full flex-col items-center justify-center rounded-card p-8 shadow-md md:p-10 ${sc.riskBtn}`}
+                      >
+                        <AlertTriangle className="mb-4 h-14 w-14 md:h-16 md:w-16" strokeWidth={2} />
+                        <h3 className="mb-3 text-xl font-bold md:text-2xl">Рискнуть</h3>
+                        <p className="mb-4 text-base opacity-90 md:text-lg">Стоимость: 0₽</p>
+                        <p className="text-center text-sm opacity-85 md:text-base">
+                          Но если что-то случится…
+                        </p>
+                      </MotionButton>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
           </motion.div>
         )}
 
