@@ -28,10 +28,9 @@ const container = {
 };
 
 const rise = {
-  hidden: { opacity: 0, y: 32 },
+  hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    y: 0,
     transition: { duration: 0.5, ease: [0.22, 1, 0.405, 1] as const },
   },
 };
@@ -40,7 +39,7 @@ function HomePage({ setCurrentPage }: HomePageProps) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 md:pb-24 md:pt-8 lg:px-8">
+    <div className="relative mx-auto max-w-7xl min-w-0 overflow-x-hidden px-4 pb-16 pt-6 sm:px-6 md:pb-24 md:pt-8 lg:px-8">
       <motion.div
         variants={container}
         initial="hidden"
@@ -282,8 +281,8 @@ function HomePage({ setCurrentPage }: HomePageProps) {
 
             <div className="relative mx-auto max-w-3xl">
               <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00A3FF]/25 bg-white/75 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#0066CC] shadow-sm backdrop-blur-md dark:border-[#00A3FF]/35 dark:bg-[#1a1a1a]/72 dark:text-[#00A3FF] md:text-sm"

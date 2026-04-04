@@ -63,6 +63,10 @@
 
   html {
     transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+    overflow-x: hidden;
+    max-width: 100%;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-x: none;
   }
 
   body {
@@ -70,10 +74,16 @@
     background-color: var(--page-bg);
     color: var(--text-primary);
     transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+    overflow-x: hidden;
+    max-width: 100%;
+    position: relative;
   }
 
   #root {
     min-height: 100vh;
+    min-height: 100dvh;
+    max-width: 100%;
+    overflow-x: clip;
     transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
   }
 }

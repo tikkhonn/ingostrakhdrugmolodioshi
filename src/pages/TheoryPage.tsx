@@ -27,10 +27,9 @@ const gridContainer = {
 };
 
 const cardAppear = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    y: 0,
     transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
@@ -148,11 +147,11 @@ function TheoryPage() {
   const quizBarPct = quizPhase === 'running' ? ((qIndex + (picked !== null ? 1 : 0)) / QUIZ_TOTAL) * 100 : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+    <div className="mx-auto max-w-7xl min-w-0 overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
       {/* Hero */}
       <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={motionTransition.page}
         className="relative mb-10 overflow-hidden rounded-[1.5rem] border border-[#0066CC]/15 bg-gradient-to-br from-[#0066CC]/[0.1] via-[var(--card-bg)] to-[#00A3FF]/[0.08] p-8 shadow-[0_20px_60px_-24px_rgba(0,102,204,0.3)] dark:border-[#00A3FF]/20 dark:from-[#0066CC]/18 dark:to-[#003366]/35 md:mb-12 md:rounded-[2rem] md:p-10 lg:p-12"
       >
@@ -231,9 +230,9 @@ function TheoryPage() {
         {tab === 'learn' && (
           <motion.div
             key="learn"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={motionTransition.page}
           >
             <div className="mb-8 text-center">
@@ -284,11 +283,11 @@ function TheoryPage() {
         {tab === 'quiz' && (
           <motion.div
             key="quiz"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={motionTransition.page}
-            className="mx-auto max-w-3xl"
+            className="mx-auto max-w-3xl min-w-0"
           >
             {quizPhase === 'idle' && (
               <div className="overflow-hidden rounded-[1.25rem] border border-ingos-border bg-gradient-to-br from-[var(--card-bg)] to-[var(--accent-muted)] p-8 shadow-lg dark:from-[#141414] dark:to-[#003366]/25 md:p-10">
@@ -409,8 +408,8 @@ function TheoryPage() {
 
             {quizPhase === 'done' && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="overflow-hidden rounded-[1.25rem] border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-50/90 to-[var(--card-bg)] p-8 text-center shadow-xl dark:from-emerald-950/40 dark:to-[#141414] md:p-12"
               >
                 <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
@@ -477,9 +476,9 @@ function TheoryPage() {
             onClick={() => setSelectedConcept(null)}
           >
             <motion.div
-              initial={{ opacity: 0, y: 32, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-card border border-ingos-border bg-ingos-card p-6 shadow-2xl md:p-10"
               onClick={(e) => e.stopPropagation()}

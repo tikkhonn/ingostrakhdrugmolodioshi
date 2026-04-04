@@ -14,11 +14,13 @@ function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('home');
 
   return (
-    <div className="min-h-screen bg-ingos-page text-ingos-text-primary transition-[background-color,color] duration-300 ease-in-out">
-      <header className="sticky top-0 z-50 border-b border-[var(--header-border)] bg-[var(--header-bg)] backdrop-blur-md transition-[background-color,border-color] duration-300 ease-in-out">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <IngosLogo onClick={() => setCurrentPage('home')} />
-          <div className="flex items-center gap-2 sm:gap-4">
+    <div className="relative min-h-screen min-h-dvh w-full max-w-[100%] overflow-x-hidden bg-ingos-page text-ingos-text-primary transition-[background-color,color] duration-300 ease-in-out">
+      <header className="sticky top-0 z-50 border-b border-[var(--header-border)] bg-[var(--header-bg)] pt-[env(safe-area-inset-top,0px)] backdrop-blur-md transition-[background-color,border-color] duration-300 ease-in-out">
+        <div className="mx-auto flex min-w-0 max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-8">
+          <div className="min-w-0 shrink">
+            <IngosLogo onClick={() => setCurrentPage('home')} />
+          </div>
+          <div className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-4">
             <nav
               className="flex items-center gap-1 sm:gap-2"
               aria-label="Основная навигация"
@@ -49,7 +51,7 @@ function App() {
         </div>
       </header>
 
-      <main className="relative overflow-x-hidden">
+      <main className="relative min-w-0 overflow-x-hidden pb-[env(safe-area-inset-bottom,0px)]">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
@@ -61,11 +63,11 @@ function App() {
                   ? 'Теория'
                   : 'Симулятор'
             }
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={motionTransition.page}
-            className="will-change-transform"
+            className="will-change-[opacity]"
           >
             {currentPage === 'home' && <HomePage setCurrentPage={setCurrentPage} />}
             {currentPage === 'theory' && <TheoryPage />}

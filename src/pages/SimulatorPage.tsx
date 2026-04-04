@@ -195,9 +195,9 @@ function pickRandomScenario(seasonKey: string): ScenarioData {
 }
 
 const phaseVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -14 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 function buildOutcome(
@@ -478,7 +478,7 @@ function SimulatorPage() {
     .reduce((s, r) => s + (r.accidentCost - r.insuranceCost), 0);
 
   return (
-    <div className="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
+    <div className="relative mx-auto max-w-5xl min-w-0 overflow-x-hidden px-4 py-8 sm:px-6 md:py-12 lg:px-8">
       <AnimatePresence>
         {effectsEnabled && gameState.currentPhase === 'scenario' && gameState.selectedSeason && (
           <motion.div
@@ -503,8 +503,8 @@ function SimulatorPage() {
       </AnimatePresence>
 
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={motionTransition.page}
         className="mb-10 flex flex-col items-stretch justify-between gap-4 md:mb-12 md:flex-row md:items-center"
       >
@@ -629,9 +629,9 @@ function SimulatorPage() {
                 return (
                   <motion.div
                     key={key}
-                    className="flex h-[300px] w-full sm:h-[320px] md:h-[340px]"
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    className="flex h-[300px] w-full min-w-0 sm:h-[320px] md:h-[340px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{
                       delay: i * motionTransition.stagger,
                       duration: 0.35,
@@ -926,8 +926,8 @@ function SimulatorPage() {
               </div>
             ) : null}
 
-            <div className="mb-8 overflow-x-auto rounded-card border border-ingos-border bg-ingos-card">
-              <table className="w-full min-w-[720px] text-left text-sm md:text-base">
+            <div className="mb-8 w-full max-w-full overflow-x-auto rounded-card border border-ingos-border bg-ingos-card [-webkit-overflow-scrolling:touch]">
+              <table className="w-full min-w-[min(100%,720px)] text-left text-sm md:min-w-[720px] md:text-base">
                 <thead className="border-b border-ingos-border bg-ingos-secondary/40 dark:bg-[#003366]/30">
                   <tr>
                     <th className="p-3 font-semibold text-ingos-text-primary">№</th>
