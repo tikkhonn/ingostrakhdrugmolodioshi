@@ -30,13 +30,17 @@ interface GameState {
   totalSaved: number;
   roundInCurrentCycle: number;
   cycleRounds: RoundRecord[];
+  /** В текущем цикле: какие сценарии (caseTitle) уже сыграны по каждому сезону — повтор до конца цикла не показываем. */
+  usedCasesBySeason: Record<SeasonKey, string[]>;
   scenarioNonce: number;
 }
 
 interface ScenarioData {
   season: string;
   caseTitle: string;
-  text: string;
+  situation: string;
+  possibleOutcome: string;
+  ifInsured: string;
   insuranceCost: number;
   accidentCost: number;
   badLuckChance: number;
@@ -92,6 +96,7 @@ const seasonThemes: Record<
     scenario: {
       storyCard: string;
       storyText: string;
+      headingEmphasis: string;
       questionHeading: string;
       insureBtn: string;
       riskBtn: string;
@@ -111,6 +116,7 @@ const seasonThemes: Record<
       storyCard:
         'border-sky-400/70 bg-gradient-to-br from-slate-50 via-sky-50 to-blue-100/90 dark:border-sky-500/40 dark:from-slate-950 dark:via-sky-950/90 dark:to-blue-950/80',
       storyText: 'text-slate-900 dark:text-sky-50',
+      headingEmphasis: 'text-sky-700 dark:text-sky-200',
       questionHeading: 'text-sky-800 dark:text-sky-200',
       insureBtn:
         'bg-sky-600 text-white shadow-md hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-400',
@@ -131,6 +137,7 @@ const seasonThemes: Record<
       storyCard:
         'border-emerald-400/65 bg-gradient-to-br from-emerald-50 via-green-50 to-pink-50/90 dark:border-emerald-500/35 dark:from-emerald-950/85 dark:via-green-950/75 dark:to-pink-950/40',
       storyText: 'text-emerald-950 dark:text-emerald-50',
+      headingEmphasis: 'text-emerald-800 dark:text-emerald-200',
       questionHeading: 'text-emerald-800 dark:text-emerald-200',
       insureBtn:
         'bg-emerald-600 text-white shadow-md hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400',
@@ -151,6 +158,7 @@ const seasonThemes: Record<
       storyCard:
         'border-amber-400/75 bg-gradient-to-br from-amber-50 via-yellow-50 to-cyan-100/90 dark:border-amber-500/45 dark:from-amber-950/80 dark:via-yellow-950/65 dark:to-cyan-950/70',
       storyText: 'text-amber-950 dark:text-amber-50',
+      headingEmphasis: 'text-amber-800 dark:text-amber-200',
       questionHeading: 'text-amber-900 dark:text-amber-200',
       insureBtn:
         'bg-amber-600 text-white shadow-md hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-400',
@@ -171,6 +179,7 @@ const seasonThemes: Record<
       storyCard:
         'border-orange-400/70 bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50/95 dark:border-orange-500/40 dark:from-orange-950/80 dark:via-amber-950/70 dark:to-rose-950/55',
       storyText: 'text-orange-950 dark:text-orange-50',
+      headingEmphasis: 'text-orange-800 dark:text-orange-200',
       questionHeading: 'text-orange-900 dark:text-orange-200',
       insureBtn:
         'bg-orange-600 text-white shadow-md hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-400',
@@ -180,14 +189,22 @@ const seasonThemes: Record<
   },
 };
 
-function pickRandomScenario(seasonKey: string): ScenarioData {
+function emptyUsedCasesBySeason(): Record<SeasonKey, string[]> {
+  return { winter: [], spring: [], summer: [], autumn: [] };
+}
+
+function pickRandomScenario(seasonKey: string, excludeCaseTitles: string[]): ScenarioData {
   const key = seasonKey as SeasonKey;
   const pool = seasonCasePools[key];
-  const template = pool[Math.floor(Math.random() * pool.length)];
+  const available = pool.filter((t) => !excludeCaseTitles.includes(t.caseTitle));
+  const pickFrom = available.length > 0 ? available : pool;
+  const template = pickFrom[Math.floor(Math.random() * pickFrom.length)];
   return {
     season: seasonNames[key],
     caseTitle: template.caseTitle,
-    text: template.text,
+    situation: template.situation,
+    possibleOutcome: template.possibleOutcome,
+    ifInsured: template.ifInsured,
     insuranceCost: template.insuranceCost,
     accidentCost: template.accidentCost,
     badLuckChance: template.badLuckChance,
@@ -211,22 +228,21 @@ function buildOutcome(
       return {
         badLuckOccurred: true,
         wasInsured: true,
-        message: '✅ Инцидент случился — но полис сработал',
+        message: '✅ Риск сработал в игре — полис помог по деньгам',
         explanation:
-          `Ситуация «${scenario.caseTitle}» (${scenario.season.toLowerCase()}): срочная помощь, ремонт или лечение в сумме обошлись бы в ${scenario.accidentCost.toLocaleString('ru-RU')}₽. ` +
-          `Вы заранее оформили страховку за ${scenario.insuranceCost.toLocaleString('ru-RU')}₽, поэтому критичные расходы были покрыты полисом. ` +
-          `По сравнению с полной оплатой из кармана вы выиграли ${moneySaved.toLocaleString('ru-RU')}₽.`,
+          `В раунде «${scenario.caseTitle}» (${scenario.season.toLowerCase()}) симулятор показал: если бы неприятный исход случился, счёт мог бы вырасти примерно на ${scenario.accidentCost.toLocaleString('ru-RU')}₽ ` +
+          `(лечение, ремонт или другие расходы — в жизни суммы другие). Ты заранее «купил» страховку за ${scenario.insuranceCost.toLocaleString('ru-RU')}₽, поэтому в игре тяжёлая часть расходов закрыта полисом. ` +
+          `Условно ты сэкономил по сравнению с полной оплатой самому: ${moneySaved.toLocaleString('ru-RU')}₽.`,
         moneySaved,
       };
     }
     return {
       badLuckOccurred: true,
       wasInsured: false,
-      message: '❌ Инцидент без страховки — полный счёт на вас',
+      message: '❌ В игре сработал риск — без полиса счёт большой',
       explanation:
-        `«${scenario.caseTitle}» (${scenario.season.toLowerCase()}): ущерб и расходы составили ${scenario.accidentCost.toLocaleString('ru-RU')}₽. ` +
-        `Страховки не было — всю сумму пришлось бы нести самостоятельно. ` +
-        `Именно здесь полис обычно и окупается: небольшая премия заранее подменяет один крупный непредвиденный платёж.`,
+        `В раунде «${scenario.caseTitle}» (${scenario.season.toLowerCase()}) симулятор показал невезение: если бы всё сложилось плохо, пришлось бы выложить порядка ${scenario.accidentCost.toLocaleString('ru-RU')}₽. ` +
+        `Страховки не было — в игре весь этот условный счёт на тебе. В жизни полис как раз и нужен, чтобы не держать в голове такую сумму в один день.`,
       moneyLost: scenario.accidentCost,
     };
   }
@@ -234,21 +250,20 @@ function buildOutcome(
     return {
       badLuckOccurred: false,
       wasInsured: true,
-      message: '✨ Обошлось без инцидента — премия «просто так»?',
+      message: '✨ В игре всё обошлось — премия ушла, но ты был под защитой',
       explanation:
-        `«${scenario.caseTitle}» (${scenario.season.toLowerCase()}): всё обошлось, страховой случай не наступил. ` +
-        `Вы заплатили ${scenario.insuranceCost.toLocaleString('ru-RU')}₽ за полис, но воспользоваться им не пришлось — так и бывает: премия это плата за снижение риска, а не «вклад с возвратом». ` +
-        `В одном раунде это выглядит как трата, в долгую же вы ограничили возможный ущерб заранее.`,
+        `«${scenario.caseTitle}» (${scenario.season.toLowerCase()}): в этом раунде «плохой» исход не выпал — ты заплатил ${scenario.insuranceCost.toLocaleString('ru-RU')}₽ за полис и не воспользовался им. ` +
+        `Так бывает: ты платишь за спокойствие и за то, что если бы риск сработал, не пришлось бы платить всё разом. В одном раунде это похоже на трату, зато лимит удара по кошельку ты заранее срезал.`,
       moneyLost: scenario.insuranceCost,
     };
   }
   return {
     badLuckOccurred: false,
     wasInsured: false,
-    message: '🎉 В этот раз повезло — и без полиса',
+    message: '🎉 В этом раунде повезло — и без страховки',
     explanation:
-      `«${scenario.caseTitle}» (${scenario.season.toLowerCase()}): вы обошлись без страховки и без инцидента — бюджет цел, премию не платили. ` +
-      `При высоком риске в похожих ситуациях такой исход — скорее удача, чем правило: если повторять отказ от защиты снова и снова, рано или поздно неприятности накапливаются в один дорогой счёт.`,
+      `«${scenario.caseTitle}» (${scenario.season.toLowerCase()}): в игре риск не сработал, ты не платил за полис и не «попал» на большой счёт. ` +
+      `Так бывает, но чем чаще играешь без защиты при высоком шансе сюрприза, тем реальнее, что когда-нибудь вылезет крупная сумма — в жизни то же по смыслу.`,
   };
 }
 
@@ -312,6 +327,7 @@ function SimulatorPage() {
     totalSaved: 0,
     roundInCurrentCycle: 0,
     cycleRounds: [],
+    usedCasesBySeason: emptyUsedCasesBySeason(),
     scenarioNonce: 0,
   });
 
@@ -344,7 +360,9 @@ function SimulatorPage() {
   }, [effectsEnabled]);
 
   const handleSeasonSelect = (season: string) => {
-    const scenario = pickRandomScenario(season);
+    const key = season as SeasonKey;
+    const exclude = gameState.usedCasesBySeason[key];
+    const scenario = pickRandomScenario(season, exclude);
     setGameState({
       ...gameState,
       selectedSeason: season,
@@ -395,6 +413,11 @@ function SimulatorPage() {
 
     const cycleRounds = [...gameState.cycleRounds, record];
     const bankrupt = newBalance === 0;
+    const seasonKey = gameState.selectedSeason as SeasonKey;
+    const usedCasesBySeason = {
+      ...gameState.usedCasesBySeason,
+      [seasonKey]: [...gameState.usedCasesBySeason[seasonKey], scenario.caseTitle],
+    };
 
     setGameState({
       ...gameState,
@@ -406,6 +429,7 @@ function SimulatorPage() {
       totalSaved: gameState.totalSaved + (outcome.moneySaved || 0),
       roundInCurrentCycle: roundInCycle,
       cycleRounds,
+      usedCasesBySeason,
     });
   };
 
@@ -441,6 +465,7 @@ function SimulatorPage() {
       outcome: null,
       roundInCurrentCycle: 0,
       cycleRounds: [],
+      usedCasesBySeason: emptyUsedCasesBySeason(),
     });
   };
 
@@ -460,6 +485,7 @@ function SimulatorPage() {
       totalSaved: 0,
       roundInCurrentCycle: 0,
       cycleRounds: [],
+      usedCasesBySeason: emptyUsedCasesBySeason(),
       scenarioNonce: 0,
     });
   };
@@ -690,13 +716,57 @@ function SimulatorPage() {
               return (
                 <>
                   <div
-                    className={`mb-8 rounded-card border-2 p-6 shadow-inner md:p-10 ${sc.storyCard}`}
+                    className={`mb-8 space-y-6 rounded-card border-2 p-6 shadow-inner md:p-10 ${sc.storyCard}`}
                   >
-                    <p
-                      className={`text-lg leading-relaxed md:text-xl ${sc.storyText}`}
-                    >
-                      {gameState.scenario.text}
-                    </p>
+                    <div>
+                      <h3
+                        className={`mb-2 text-sm font-bold uppercase tracking-wide opacity-80 md:text-base ${sc.storyText}`}
+                      >
+                        Ситуация
+                      </h3>
+                      <p
+                        className={`text-lg leading-relaxed md:text-xl ${sc.storyText}`}
+                      >
+                        {gameState.scenario.situation}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className={`mb-3 ${sc.storyText}`}>
+                        <span className="mb-0.5 block text-[0.65rem] font-bold uppercase tracking-[0.22em] opacity-55 md:text-xs">
+                          Возможный
+                        </span>
+                        <span
+                          className={`block text-lg font-black uppercase leading-tight tracking-tight md:text-xl ${sc.headingEmphasis}`}
+                        >
+                          исход
+                        </span>
+                      </h3>
+                      <p
+                        className={`text-lg leading-relaxed md:text-xl ${sc.storyText}`}
+                      >
+                        {gameState.scenario.possibleOutcome}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className={`mb-3 ${sc.storyText}`}>
+                        <span className="mb-0.5 block text-[0.65rem] font-bold uppercase tracking-[0.22em] opacity-55 md:text-xs">
+                          Что будет
+                        </span>
+                        <span
+                          className={`block text-lg font-black leading-snug tracking-tight md:text-xl ${sc.headingEmphasis}`}
+                        >
+                          если застраховаться
+                        </span>
+                        <span className="mt-1 block text-[0.65rem] font-bold uppercase tracking-[0.18em] opacity-60 md:text-xs">
+                          заранее
+                        </span>
+                      </h3>
+                      <p
+                        className={`text-lg leading-relaxed md:text-xl ${sc.storyText}`}
+                      >
+                        {gameState.scenario.ifInsured}
+                      </p>
+                    </div>
                   </div>
 
                   <h2
