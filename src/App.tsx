@@ -3,12 +3,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import HomePage from './pages/HomePage';
 import TheoryPage from './pages/TheoryPage';
 import SimulatorPage from './pages/SimulatorPage';
+import PersonalCasePage from './pages/PersonalCasePage';
+import SupportPage from './pages/SupportPage';
 import { IngosLogo } from './components/IngosLogo';
 import { ThemeToggle } from './components/ThemeToggle';
 import { MotionNavButton } from './components/MotionButton';
 import { motionTransition } from './theme/theme';
 
-export type PageId = 'home' | 'theory' | 'simulator';
+export type PageId = 'home' | 'theory' | 'simulator' | 'personal' | 'support';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('home');
@@ -45,6 +47,26 @@ function App() {
               >
                 Симулятор
               </MotionNavButton>
+              <MotionNavButton
+                onClick={() => setCurrentPage('personal')}
+                className={`rounded-btn px-3 py-2 text-sm font-semibold sm:px-4 sm:text-base ${
+                  currentPage === 'personal'
+                    ? 'bg-[#0066CC] text-white shadow-md'
+                    : 'text-ingos-text-primary hover:bg-ingos-secondary hover:text-[#0066CC] dark:hover:bg-[#003366] dark:hover:text-[#00A3FF]'
+                }`}
+              >
+                Личный разбор
+              </MotionNavButton>
+              <MotionNavButton
+                onClick={() => setCurrentPage('support')}
+                className={`rounded-btn px-3 py-2 text-sm font-semibold sm:px-4 sm:text-base ${
+                  currentPage === 'support'
+                    ? 'bg-[#0066CC] text-white shadow-md'
+                    : 'text-ingos-text-primary hover:bg-ingos-secondary hover:text-[#0066CC] dark:hover:bg-[#003366] dark:hover:text-[#00A3FF]'
+                }`}
+              >
+                Техподдержка
+              </MotionNavButton>
             </nav>
             <ThemeToggle />
           </div>
@@ -61,7 +83,11 @@ function App() {
                 ? 'Главная страница'
                 : currentPage === 'theory'
                   ? 'Теория'
-                  : 'Симулятор'
+                  : currentPage === 'simulator'
+                    ? 'Симулятор'
+                    : currentPage === 'personal'
+                      ? 'Личный разбор'
+                      : 'Техподдержка'
             }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -72,6 +98,8 @@ function App() {
             {currentPage === 'home' && <HomePage setCurrentPage={setCurrentPage} />}
             {currentPage === 'theory' && <TheoryPage />}
             {currentPage === 'simulator' && <SimulatorPage />}
+            {currentPage === 'personal' && <PersonalCasePage />}
+            {currentPage === 'support' && <SupportPage />}
           </motion.div>
         </AnimatePresence>
       </main>

@@ -7,6 +7,8 @@ import {
   BookOpen,
   Zap,
   HeartHandshake,
+  Bot,
+  LifeBuoy,
 } from 'lucide-react';
 import { MotionButton } from '../components/MotionButton';
 import type { PageId } from '../App';
@@ -312,8 +314,8 @@ function HomePage({ setCurrentPage }: HomePageProps) {
         </motion.section>
 
         {/* —— Bento CTAs —— */}
-        <motion.div variants={rise} className="grid gap-5 md:grid-cols-12 md:gap-6 lg:gap-8">
-          <div className="group relative md:col-span-5">
+        <motion.div variants={rise} className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 md:gap-6 lg:gap-8">
+          <div className="group relative">
             <div
               className="absolute -inset-px rounded-card bg-gradient-to-br from-[#0066CC]/40 via-transparent to-[#00A3FF]/30 opacity-60 blur-sm transition duration-500 group-hover:opacity-90 dark:from-[#00A3FF]/30 dark:to-[#0066CC]/25"
               aria-hidden
@@ -339,7 +341,7 @@ function HomePage({ setCurrentPage }: HomePageProps) {
             </MotionButton>
           </div>
 
-          <div className="group relative md:col-span-7">
+          <div className="group relative">
             <div
               className="absolute -inset-0.5 rounded-[14px] bg-gradient-to-br from-[#0066CC] via-[#0088ee] to-[#00A3FF] opacity-90 shadow-lg shadow-[#0066CC]/25 dark:shadow-[#00A3FF]/20"
               aria-hidden
@@ -367,6 +369,61 @@ function HomePage({ setCurrentPage }: HomePageProps) {
                 <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/20">
                   Случайные сценарии
                 </span>
+              </div>
+            </MotionButton>
+          </div>
+
+          <div className="group relative">
+            <div
+              className="absolute -inset-px rounded-card bg-gradient-to-br from-[#00A3FF]/40 via-transparent to-[#0066CC]/30 opacity-70 blur-sm transition duration-500 group-hover:opacity-95"
+              aria-hidden
+            />
+            <MotionButton
+              onClick={() => setCurrentPage('personal')}
+              className="relative flex h-full min-h-[280px] w-full flex-col rounded-card border border-ingos-border bg-ingos-card p-8 text-left shadow-md transition-shadow duration-300 hover:shadow-xl dark:border-[#2e2e32] dark:bg-[#141414] md:min-h-[320px] md:p-10"
+            >
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00A3FF]/20 to-transparent text-[#0066CC] ring-1 ring-[#00A3FF]/25 dark:text-[#00A3FF]">
+                <Bot className="h-9 w-9" strokeWidth={2} />
+              </div>
+              <h3 className="mb-3 text-2xl font-bold text-ingos-text-primary md:text-3xl">
+                Личный разбор
+              </h3>
+              <p className="mb-8 flex-1 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
+                Опиши свой случай или выбери шаблон. LLM даст процент риска и объяснит ситуацию
+                простым языком.
+              </p>
+              <div className="flex items-center font-semibold text-[#0066CC] dark:text-[#00A3FF]">
+                <span>Разобрать кейс</span>
+                <ArrowRight
+                  className="ml-2 h-5 w-5 transition-transform duration-150 ease-out group-hover:translate-x-1.5"
+                  aria-hidden
+                />
+              </div>
+            </MotionButton>
+          </div>
+
+          <div className="group relative">
+            <div
+              className="absolute -inset-px rounded-card bg-gradient-to-br from-[#0066CC]/35 via-transparent to-[#00A3FF]/35 opacity-65 blur-sm transition duration-500 group-hover:opacity-95"
+              aria-hidden
+            />
+            <MotionButton
+              onClick={() => setCurrentPage('support')}
+              className="relative flex h-full min-h-[280px] w-full flex-col rounded-card border border-ingos-border bg-ingos-card p-8 text-left shadow-md transition-shadow duration-300 hover:shadow-xl dark:border-[#2e2e32] dark:bg-[#141414] md:min-h-[320px] md:p-10"
+            >
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0066CC]/15 to-transparent text-[#0066CC] ring-1 ring-[#0066CC]/20 dark:text-[#00A3FF] dark:ring-[#00A3FF]/25">
+                <LifeBuoy className="h-9 w-9" strokeWidth={2} />
+              </div>
+              <h3 className="mb-3 text-2xl font-bold text-ingos-text-primary md:text-3xl">Техподдержка</h3>
+              <p className="mb-8 flex-1 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
+                Переход в Telegram-бот: предложить изменения на сайте или обсудить свой случай персонально.
+              </p>
+              <div className="flex items-center font-semibold text-[#0066CC] dark:text-[#00A3FF]">
+                <span>Написать в поддержку</span>
+                <ArrowRight
+                  className="ml-2 h-5 w-5 transition-transform duration-150 ease-out group-hover:translate-x-1.5"
+                  aria-hidden
+                />
               </div>
             </MotionButton>
           </div>

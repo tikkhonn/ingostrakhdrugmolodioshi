@@ -71,3 +71,25 @@ export default defineConfig([
   },
 ])
 ```
+
+## LLM setup (Google Gemini)
+
+1. Copy `.env.example` to `.env.local`.
+2. В [Google AI Studio](https://aistudio.google.com/) создай API-ключ и вставь в `VITE_GOOGLE_API_KEY`.
+3. При необходимости поменяй модель в `VITE_GEMINI_MODEL` (по умолчанию `gemini-flash-latest`).
+4. Перезапусти dev-сервер (`npm run dev`).
+
+Ключ в браузере виден в собранном фронте — для продакшена лучше проксировать запросы через свой бэкенд и ограничить ключ по HTTP referrer в Google Cloud.
+
+Example:
+
+```bash
+cp .env.example .env.local
+```
+
+## Telegram support bot
+
+В проект добавлен шаблон бота в `telegram-bot/`.
+
+- Инструкции: `telegram-bot/README.md`
+- Функции: приветствие, шаблоны обращений, эскалация сложного кейса оператору.

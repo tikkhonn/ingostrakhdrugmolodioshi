@@ -24,7 +24,7 @@ export const seasonCasePools: Record<SeasonKey, SeasonCaseTemplate[]> = {
       ifInsured:
         'Если заранее оформить страховку на активный отдых, полис часто помогает закрыть большую часть неожиданных медицинских расходов — ты платишь небольшую сумму до поездки, а не весь счёт разом.',
       insuranceCost: 520,
-      accidentCost: 950000000000000000000000000000000000000000000000000000,
+      accidentCost: 9500,
       badLuckChance: P,
     },
     {

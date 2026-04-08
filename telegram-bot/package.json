@@ -1,0 +1,14 @@
+{
+  "name": "purple2-support-telegram-bot",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node bot.js",
+    "check-token": "node check-token.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "telegraf": "^4.16.3"
+  }
+}
