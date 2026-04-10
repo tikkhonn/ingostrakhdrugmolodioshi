@@ -3,6 +3,7 @@ import {
   ArrowRight,
   Sparkles,
   Gamepad2,
+  BrainCircuit,
   Shield,
   BookOpen,
   Zap,
@@ -169,18 +170,21 @@ function HomePage({ setCurrentPage }: HomePageProps) {
               </h1>
 
               <p className="mb-10 max-w-xl text-base leading-relaxed text-ingos-text-secondary md:text-lg md:leading-relaxed">
-                Разберись в рисках без занудных лекций: короткая теория и симулятор, где твои решения
-                сразу бьются по «кошельку».
+                Хочешь стать самостоятельнее? Самое время разобраться в страховании и понять как оно поможет тебе в будущем.
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <span className="inline-flex items-center gap-2 rounded-full border border-ingos-border bg-[var(--card-bg)]/90 px-4 py-2 text-sm font-medium text-ingos-text-primary shadow-sm backdrop-blur-sm dark:bg-[#1a1a1a]/80">
                   <BookOpen className="h-4 w-4 text-[#0066CC] dark:text-[#00A3FF]" aria-hidden />
-                  Теория + практика
+                  Теория + тестик
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-ingos-border bg-[var(--card-bg)]/90 px-4 py-2 text-sm font-medium text-ingos-text-primary shadow-sm backdrop-blur-sm dark:bg-[#1a1a1a]/80">
                   <Gamepad2 className="h-4 w-4 text-[#0066CC] dark:text-[#00A3FF]" aria-hidden />
-                  Живой симулятор
+                  Игра
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-ingos-border bg-[var(--card-bg)]/90 px-4 py-2 text-sm font-medium text-ingos-text-primary shadow-sm backdrop-blur-sm dark:bg-[#1a1a1a]/80">
+                  <BrainCircuit className="h-4 w-4 text-[#0066CC] dark:text-[#00A3FF]" aria-hidden />
+                  Личный разбор
                 </span>
               </div>
             </div>
@@ -290,7 +294,7 @@ function HomePage({ setCurrentPage }: HomePageProps) {
                 className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#00A3FF]/25 bg-white/75 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#0066CC] shadow-sm backdrop-blur-md dark:border-[#00A3FF]/35 dark:bg-[#1a1a1a]/72 dark:text-[#00A3FF] md:text-sm"
               >
                 <HeartHandshake className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden />
-                Семья
+                Предусмотрительность 
                 <span className="text-ingos-text-secondary/70 dark:text-white/35">·</span>
                 бюджет
                 <span className="text-ingos-text-secondary/70 dark:text-white/35">·</span>
@@ -305,9 +309,8 @@ function HomePage({ setCurrentPage }: HomePageProps) {
               </h2>
 
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-ingos-text-secondary md:text-lg md:leading-relaxed">
-                Страхование защищает тебя и близких от непредвиденных расходов. Разобраться в этом сейчас —
-                значит увереннее принимать взрослые решения: что покрывает полис, когда он окупается и
-                когда разумнее не рисковать.
+                Страхование защищает тебя и близких от непредвиденных расходов. 
+                Разберись в "базе" страхования сейчас, чтобы потом не гуглить в панике «что мне теперь делать?».
               </p>
             </div>
           </div>
@@ -327,9 +330,9 @@ function HomePage({ setCurrentPage }: HomePageProps) {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-muted)] to-transparent text-[#0066CC] ring-1 ring-[#0066CC]/15 dark:text-[#00A3FF] dark:ring-[#00A3FF]/20">
                 <Sparkles className="h-9 w-9" strokeWidth={2} />
               </div>
-              <h3 className="mb-3 text-2xl font-bold text-ingos-text-primary md:text-3xl">Теория</h3>
+              <h3 className="mb-3 text-2xl font-bold text-ingos-text-primary md:text-3xl">"Это база"</h3>
               <p className="mb-8 flex-1 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
-                Основные понятия на простом языке: полис, франшиза, страховой случай и не только.
+                Основные понятия на максимально простом языке: полис, франшиза, страховой случай и не только.
               </p>
               <div className="flex items-center font-semibold text-[#0066CC] dark:text-[#00A3FF]">
                 <span>Начать учиться</span>
@@ -353,7 +356,7 @@ function HomePage({ setCurrentPage }: HomePageProps) {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25 backdrop-blur-sm">
                 <Gamepad2 className="h-9 w-9 text-white" strokeWidth={2} />
               </div>
-              <h3 className="mb-3 text-2xl font-bold md:text-3xl lg:text-4xl">Симулятор рисков</h3>
+              <h3 className="mb-3 text-2xl font-bold md:text-3xl lg:text-4xl">Поиграем?</h3>
               <p className="mb-8 max-w-lg flex-1 text-base leading-relaxed text-white/90 md:text-lg">
                 Интерактивная игра: решай, страховаться или рискнуть, и смотри, что из этого выйдет — с
                 разными сезонами и случайными ситуациями.
@@ -389,7 +392,7 @@ function HomePage({ setCurrentPage }: HomePageProps) {
                 Личный разбор
               </h3>
               <p className="mb-8 flex-1 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
-                Опиши свой случай или выбери шаблон. LLM даст процент риска и объяснит ситуацию
+                Опиши свой случай или выбери шаблон. Нейросеть рассчитает процент риска и даст рекомендации
                 простым языком.
               </p>
               <div className="flex items-center font-semibold text-[#0066CC] dark:text-[#00A3FF]">
@@ -414,9 +417,9 @@ function HomePage({ setCurrentPage }: HomePageProps) {
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0066CC]/15 to-transparent text-[#0066CC] ring-1 ring-[#0066CC]/20 dark:text-[#00A3FF] dark:ring-[#00A3FF]/25">
                 <LifeBuoy className="h-9 w-9" strokeWidth={2} />
               </div>
-              <h3 className="mb-3 text-2xl font-bold text-ingos-text-primary md:text-3xl">Техподдержка</h3>
+              <h3 className="mb-3 text-2xl font-bold text-ingos-text-primary md:text-3xl">Нужна помощь</h3>
               <p className="mb-8 flex-1 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
-                Переход в Telegram-бот: предложить изменения на сайте или обсудить свой случай персонально.
+                Хочешь что-то предложить или обсудить с нашими работниками? Переходи в Telegram-бот, с радостью поможем тебе!
               </p>
               <div className="flex items-center font-semibold text-[#0066CC] dark:text-[#00A3FF]">
                 <span>Написать в поддержку</span>

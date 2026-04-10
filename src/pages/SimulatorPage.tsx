@@ -17,7 +17,7 @@ import { motionTransition } from '../theme/theme';
 import { AutumnEffect, SnowEffect, SpringEffect } from '../components/season-effects';
 import { seasonCasePools, type SeasonKey } from '../data/simulatorSeasonCases';
 
-const ROUNDS_PER_CYCLE = 12;
+const ROUNDS_PER_SEASON = 5;
 
 interface GameState {
   walletBalance: number;
@@ -434,24 +434,33 @@ function SimulatorPage() {
   };
 
   const goNextRound = () => {
-    setGameState({
-      ...gameState,
-      currentPhase: 'season',
-      selectedSeason: null,
-      insuranceBought: false,
-      scenario: null,
-      outcome: null,
-    });
-  };
+    if (!gameState.selectedSeason) return;
+    const seasonKey = gameState.selectedSeason as SeasonKey;
+    const seasonRoundsDone = gameState.roundInCurrentCycle;
 
-  const goToCycleSummary = () => {
+    // После 5 раундов по выбранному сезону возвращаем к выбору следующего сезона.
+    if (seasonRoundsDone >= ROUNDS_PER_SEASON) {
+      setGameState({
+        ...gameState,
+        currentPhase: 'season',
+        selectedSeason: null,
+        insuranceBought: false,
+        scenario: null,
+        outcome: null,
+        roundInCurrentCycle: 0,
+      });
+      return;
+    }
+
+    const exclude = gameState.usedCasesBySeason[seasonKey];
+    const scenario = pickRandomScenario(seasonKey, exclude);
     setGameState({
       ...gameState,
-      currentPhase: 'cycle_summary',
-      selectedSeason: null,
       insuranceBought: false,
-      scenario: null,
+      scenario,
       outcome: null,
+      currentPhase: 'scenario',
+      scenarioNonce: gameState.scenarioNonce + 1,
     });
   };
 
@@ -490,8 +499,8 @@ function SimulatorPage() {
     });
   };
 
-  const cycleComplete =
-    gameState.roundInCurrentCycle >= ROUNDS_PER_CYCLE && gameState.walletBalance > 0;
+  const seasonComplete =
+    gameState.roundInCurrentCycle >= ROUNDS_PER_SEASON && gameState.walletBalance > 0;
   const insights = summarizeCycleInsights(gameState.cycleRounds);
 
   const totalPremiums = gameState.cycleRounds.reduce((s, r) => s + r.premiumPaid, 0);
@@ -568,9 +577,9 @@ function SimulatorPage() {
             </div>
           </div>
           <div className="text-center">
-            <p className="text-sm text-ingos-text-secondary md:text-base">Раунд игры</p>
+            <p className="text-sm text-ingos-text-secondary md:text-base">Раунд сезона</p>
             <p className="text-3xl font-bold tabular-nums text-[#0066CC] dark:text-[#00A3FF] md:text-4xl">
-              {Math.min(gameState.roundInCurrentCycle, ROUNDS_PER_CYCLE)} / {ROUNDS_PER_CYCLE}
+              {Math.min(gameState.roundInCurrentCycle, ROUNDS_PER_SEASON)} / {ROUNDS_PER_SEASON}
             </p>
           </div>
           <div className="text-center">
@@ -615,11 +624,11 @@ function SimulatorPage() {
                   <Info className="h-9 w-9" strokeWidth={2} aria-hidden />
                 </div>
                 <h2 className="mb-4 text-2xl font-extrabold text-ingos-text-primary md:text-3xl">
-                  Сначала коротко
+                  Объясняем что и как 
                 </h2>
                 <p className="mb-4 text-base leading-relaxed text-ingos-text-secondary md:text-lg">
                   Это игра, а не настоящий договор со страховой. Цифры здесь простые, всё быстро — так
-                  проще потренироваться.
+                  проще потренироваться. Деньги тоже виртуальные)
                 </p>
                 <p className="mb-8 text-base leading-relaxed text-ingos-text-primary md:text-lg">
                   По-настоящему всё дольше и запутаннее. Но из игры всё равно можно понять главное: что
@@ -646,7 +655,7 @@ function SimulatorPage() {
             transition={motionTransition.page}
           >
             <h2 className="mb-8 text-center text-xl font-bold text-ingos-text-primary md:text-2xl lg:text-3xl">
-              Выбери сезон и сценарий
+              Выбери сезон
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
               {(Object.keys(seasonNames) as SeasonKey[]).map((key, i) => {
@@ -914,21 +923,12 @@ function SimulatorPage() {
             ) : null}
 
             <div className="grid gap-4 md:grid-cols-2 md:gap-6">
-              {cycleComplete ? (
-                <MotionButton
-                  onClick={goToCycleSummary}
-                  className="rounded-btn bg-[#0066CC] py-4 text-base font-bold text-white shadow-md md:text-lg"
-                >
-                  Итоги игры
-                </MotionButton>
-              ) : (
-                <MotionButton
-                  onClick={goNextRound}
-                  className="rounded-btn bg-[#0066CC] py-4 text-base font-bold text-white shadow-md md:text-lg"
-                >
-                  Следующий раунд
-                </MotionButton>
-              )}
+              <MotionButton
+                onClick={goNextRound}
+                className="rounded-btn bg-[#0066CC] py-4 text-base font-bold text-white shadow-md md:text-lg"
+              >
+                {seasonComplete ? 'Выбрать другой сезон' : 'Следующий раунд'}
+              </MotionButton>
               <MotionButton
                 onClick={resetGame}
                 className="rounded-btn bg-ingos-secondary py-4 text-base font-bold text-[#0066CC] shadow-md dark:bg-[#003366] dark:text-[#00A3FF] md:text-lg"

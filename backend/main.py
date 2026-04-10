@@ -1,4 +1,4 @@
-"""API личного разбора кейсов (Gemini). Запуск: uvicorn main:app --reload --port 8000"""
+"""личный разбор кейсов"""
 from __future__ import annotations
 
 import os
@@ -40,6 +40,7 @@ def build_prompt(user_case: str) -> str:
 Риск: <число>%
 Понятно подростку: <2-4 простых предложения без сложных терминов>
 Разбор случая: <3-6 предложений: что может случиться, какие расходы возможны, что уточнить у страховой>
+Рекомендации: <2-4 простых предложения без сложных терминов>
 
 Кейс пользователя:
 {user_case}"""
@@ -150,6 +151,6 @@ def analyze(body: AnalyzeBody):
         if "429" in msg or "quota" in low or "resource exhausted" in low:
             raise HTTPException(
                 status_code=429,
-                detail="Превышен лимит запросов к модели. Попробуй позже или смени модель в настройках сервера.",
+                detail="Превышен лимит запросов к модели(20 в день). Попробуй позже или смени модель в настройках сервера.",
             ) from e
         raise HTTPException(status_code=502, detail="Не удалось получить ответ модели.") from e

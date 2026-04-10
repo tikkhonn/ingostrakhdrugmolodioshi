@@ -18,18 +18,26 @@ function App() {
   return (
     <div className="relative min-h-screen min-h-dvh w-full max-w-[100%] overflow-x-hidden bg-ingos-page text-ingos-text-primary transition-[background-color,color] duration-300 ease-in-out">
       <header className="sticky top-0 z-50 border-b border-[var(--header-border)] bg-[var(--header-bg)] pt-[env(safe-area-inset-top,0px)] backdrop-blur-md transition-[background-color,border-color] duration-300 ease-in-out">
-        <div className="mx-auto flex min-w-0 max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-8">
-          <div className="min-w-0 shrink">
+        <div className="mx-auto flex min-w-0 max-w-7xl items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:px-8">
+          <div className="min-w-[128px] shrink-0 sm:min-w-0">
             <IngosLogo onClick={() => setCurrentPage('home')} />
           </div>
-          <div className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-4">
+          <div className="relative min-w-0 flex-1">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-[var(--header-bg)] to-transparent sm:hidden"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-[var(--header-bg)] to-transparent sm:hidden"
+            />
             <nav
-              className="flex items-center gap-1 sm:gap-2"
+              className="flex min-w-max items-center gap-1 overflow-x-auto whitespace-nowrap px-2 sm:min-w-0 sm:justify-center sm:gap-2 sm:overflow-visible sm:px-0"
               aria-label="Основная навигация"
             >
               <MotionNavButton
                 onClick={() => setCurrentPage('theory')}
-                className={`rounded-btn px-3 py-2 text-sm font-semibold sm:px-4 sm:text-base ${
+                className={`shrink-0 rounded-btn px-2.5 py-1.5 text-xs font-semibold sm:px-4 sm:py-2 sm:text-base ${
                   currentPage === 'theory'
                     ? 'bg-[#0066CC] text-white shadow-md'
                     : 'text-ingos-text-primary hover:bg-ingos-secondary hover:text-[#0066CC] dark:hover:bg-[#003366] dark:hover:text-[#00A3FF]'
@@ -39,17 +47,17 @@ function App() {
               </MotionNavButton>
               <MotionNavButton
                 onClick={() => setCurrentPage('simulator')}
-                className={`rounded-btn px-3 py-2 text-sm font-semibold sm:px-4 sm:text-base ${
+                className={`shrink-0 rounded-btn px-2.5 py-1.5 text-xs font-semibold sm:px-4 sm:py-2 sm:text-base ${
                   currentPage === 'simulator'
                     ? 'bg-[#0066CC] text-white shadow-md'
                     : 'text-ingos-text-primary hover:bg-ingos-secondary hover:text-[#0066CC] dark:hover:bg-[#003366] dark:hover:text-[#00A3FF]'
                 }`}
               >
-                Симулятор
+                Игра
               </MotionNavButton>
               <MotionNavButton
                 onClick={() => setCurrentPage('personal')}
-                className={`rounded-btn px-3 py-2 text-sm font-semibold sm:px-4 sm:text-base ${
+                className={`shrink-0 rounded-btn px-2.5 py-1.5 text-xs font-semibold sm:px-4 sm:py-2 sm:text-base ${
                   currentPage === 'personal'
                     ? 'bg-[#0066CC] text-white shadow-md'
                     : 'text-ingos-text-primary hover:bg-ingos-secondary hover:text-[#0066CC] dark:hover:bg-[#003366] dark:hover:text-[#00A3FF]'
@@ -59,7 +67,7 @@ function App() {
               </MotionNavButton>
               <MotionNavButton
                 onClick={() => setCurrentPage('support')}
-                className={`rounded-btn px-3 py-2 text-sm font-semibold sm:px-4 sm:text-base ${
+                className={`shrink-0 rounded-btn px-2.5 py-1.5 text-xs font-semibold sm:px-4 sm:py-2 sm:text-base ${
                   currentPage === 'support'
                     ? 'bg-[#0066CC] text-white shadow-md'
                     : 'text-ingos-text-primary hover:bg-ingos-secondary hover:text-[#0066CC] dark:hover:bg-[#003366] dark:hover:text-[#00A3FF]'
@@ -68,6 +76,8 @@ function App() {
                 Техподдержка
               </MotionNavButton>
             </nav>
+          </div>
+          <div className="shrink-0">
             <ThemeToggle />
           </div>
         </div>

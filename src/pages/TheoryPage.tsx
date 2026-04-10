@@ -162,17 +162,16 @@ function TheoryPage() {
           <div className="max-w-xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#0066CC]/25 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#0066CC] backdrop-blur dark:border-[#00A3FF]/35 dark:bg-[#1a1a1a]/75 dark:text-[#00A3FF]">
               <Sparkles className="h-3.5 w-3.5" aria-hidden />
-              Мини-курс
+              Мини-курсик
             </div>
             <h1 className="mb-3 text-3xl font-extrabold leading-tight text-ingos-text-primary md:text-4xl lg:text-5xl">
               <span className="bg-gradient-to-r from-[#0066CC] to-[#00A3FF] bg-clip-text text-transparent dark:from-[#66b3ff] dark:to-[#00A3FF]">
-                Теория
+                "База"
               </span>{' '}
               страхования
             </h1>
             <p className="text-base leading-relaxed text-ingos-text-secondary md:text-lg">
-              Карточки с терминами, отметки «изучено» и тест из {QUIZ_TOTAL} вопросов — прогресс
-              сохраняется в браузере.
+              Давай быстренько разберемся что вообще стоит знать.<br />Не переживай, тут совсем немного.
             </p>
           </div>
           <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:max-w-md">
@@ -221,7 +220,7 @@ function TheoryPage() {
         >
           <span className="flex items-center gap-2">
             <ClipboardCheck className="h-4 w-4 md:h-5 md:w-5" aria-hidden />
-            Проверка знаний
+            Наконец-то практика!
           </span>
         </MotionButton>
       </div>
@@ -240,7 +239,7 @@ function TheoryPage() {
                 Основные понятия
               </h2>
               <p className="text-ingos-text-secondary md:text-lg">
-                Открой карточку, прочитай и отметь «изучено» — так курс заполняется до 100%.
+                Открой карточку, разберись и отметь «изучено» — так курс теории заполняется до 100%.
               </p>
             </div>
 
