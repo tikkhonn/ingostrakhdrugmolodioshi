@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Bot, Check, Copy, Sparkles, Shield } from 'lucide-react';
 import { MotionButton } from '../components/MotionButton';
@@ -86,7 +85,6 @@ function parseRiskPercent(rawText: string): number {
   return 50;
 }
 
-/** Убираем markdown-обёртки, чтобы парсер не ломался на ответах Gemini. */
 function stripMarkdownNoise(text: string): string {
   return text
     .replace(/\*\*([^*]+)\*\*/g, '$1')
@@ -94,10 +92,6 @@ function stripMarkdownNoise(text: string): string {
     .trim();
 }
 
-/**
- * Gemini часто не соблюдает точный шаблон заголовков — тогда старый парсер
- * подставлял одинаковые «заглушки», хотя модель отвечала нормально.
- */
 function parsePersonalAnalysis(rawText: string): PersonalAnalysisResult {
   const plain = stripMarkdownNoise(rawText);
   const riskPercent = parseRiskPercent(plain);
@@ -195,81 +189,58 @@ function buildLocalFallback(userCase: string): PersonalAnalysisResult {
   };
 }
 
-function getGoogleApiKey(): string | undefined {
-  const primary = import.meta.env.VITE_GOOGLE_API_KEY?.trim();
-  const legacy = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
-  return primary || legacy || undefined;
-}
-
-function extractGeminiText(result: Awaited<ReturnType<ReturnType<GoogleGenerativeAI['getGenerativeModel']>['generateContent']>>): string {
-  try {
-    return result.response.text();
-  } catch {
-    const parts = result.response.candidates?.[0]?.content?.parts;
-    if (!parts) return '';
-    return parts.map((p) => ('text' in p && typeof p.text === 'string' ? p.text : '')).join('');
-  }
+function getPersonalCaseApiBase(): string {
+  return import.meta.env.VITE_PERSONAL_CASE_API_BASE?.trim() ?? '';
 }
 
 async function requestPersonalAnalysis(userCase: string): Promise<PersonalAnalysisResult> {
-  const apiKey = getGoogleApiKey();
-  const modelName = import.meta.env.VITE_GEMINI_MODEL || 'gemini-flash-latest';
-
-  if (!apiKey) {
-    return {
-      ...buildLocalFallback(userCase),
-      source: 'fallback',
-      fallbackReason:
-        'Не задан ключ API. Добавь в .env.local строку VITE_GOOGLE_API_KEY=... (ключ из Google AI Studio) и перезапусти npm run dev.',
-    };
-  }
-
-  const prompt = `Ты помощник по страхованию для подростков. Проанализируй кейс и ответь ТОЛЬКО на русском, без markdown и без заголовков #.
-
-Строго в таком формате (эти три строки с такими же подписями обязательны):
-
-Риск: <число>%
-Понятно подростку: <2-4 простых предложения без сложных терминов>
-Разбор случая: <3-6 предложений: что может случиться, какие расходы возможны, что уточнить у страховой>
-
-Кейс пользователя:
-${userCase}`;
+  const base = getPersonalCaseApiBase();
+  const url = `${base}/api/personal-case/analyze`;
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction:
-        'Ты объясняешь страховые риски подросткам простым и доброжелательным языком. Не давай юридических гарантий.',
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseText: userCase }),
     });
 
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.4, maxOutputTokens: 1024 },
-    });
+    const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
 
-    const text = extractGeminiText(result);
-    if (typeof text !== 'string' || !text.trim()) {
+    if (!res.ok) {
       const fallback = buildLocalFallback(userCase);
+      let fallbackReason =
+        'Сервис разбора сейчас недоступен. Ниже — упрощённый учебный разбор.';
+      if (res.status === 429) {
+        fallbackReason =
+          'Сейчас слишком много запросов или достигнут лимит. Попробуй позже. Ниже — упрощённый разбор.';
+      } else if (res.status === 503) {
+        fallbackReason =
+          'Разбор временно недоступен. Ниже — упрощённый учебный разбор.';
+      }
       return {
         ...fallback,
         source: 'fallback',
-        fallbackReason:
-          'Модель вернула пустой ответ. Ваш случай рассмотрен на основе локального разбора.',
-        caseBreakdown: `${fallback.caseBreakdown}\n\nМодель вернула пустой ответ, поэтому показан локальный учебный разбор.`,
+        fallbackReason,
       };
     }
 
-    return { ...parsePersonalAnalysis(text), source: 'llm' };
-  } catch (error) {
+    if (typeof data.text === 'string' && data.text.trim()) {
+      return { ...parsePersonalAnalysis(data.text), source: 'llm' };
+    }
+
     const fallback = buildLocalFallback(userCase);
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      ...fallback,
+      source: 'fallback',
+      fallbackReason: 'Не удалось получить ответ сервиса. Ниже — упрощённый разбор.',
+    };
+  } catch {
+    const fallback = buildLocalFallback(userCase);
     return {
       ...fallback,
       source: 'fallback',
       fallbackReason:
-        'Не удалось подключиться к Gemini (Google AI). Ваш случай рассмотрен на основе локального разбора.',
-      caseBreakdown: `${fallback.caseBreakdown}\n\nНе удалось подключиться к Gemini: ${message}. Показан локальный учебный разбор.`,
+        'Не удалось связаться с сервисом. Проверь подключение к сети. Ниже — упрощённый разбор.',
     };
   }
 }
@@ -283,11 +254,6 @@ function PersonalCasePage() {
   const [personalAnalysis, setPersonalAnalysis] = useState<PersonalAnalysisResult | null>(null);
   const [analysisHistory, setAnalysisHistory] = useState<PersonalAnalysisHistoryItem[]>([]);
   const [copied, setCopied] = useState(false);
-
-  const hasGeminiApiKey = useMemo(
-    () => Boolean(getGoogleApiKey()),
-    [],
-  );
 
   const selectedTemplate = useMemo(
     () => personalCaseTemplates.find((t) => t.id === selectedTemplateId) ?? personalCaseTemplates[0],
@@ -387,9 +353,7 @@ function PersonalCasePage() {
         <div className="relative mb-8 md:mb-10">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#0066CC]/25 bg-white/75 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#0066CC] shadow-sm backdrop-blur-md dark:border-[#00A3FF]/35 dark:bg-[#1a1a1a]/72 dark:text-[#00A3FF] md:text-sm">
             <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden />
-            LLM
-            <span className="text-ingos-text-secondary/70 dark:text-white/35">·</span>
-            личный кейс
+            Личный кейс
           </div>
           <h1 className="mb-3 text-3xl font-extrabold tracking-tight md:text-5xl">
             <span className="bg-gradient-to-br from-[#0066CC] via-[#0088ee] to-[#00A3FF] bg-clip-text text-transparent">
@@ -401,14 +365,6 @@ function PersonalCasePage() {
             Выбери популярный страховой кейс как шаблон или опиши свою ситуацию. В ответ получишь: %
             риска, объяснение простым языком и короткий разбор твоего случая.
           </p>
-          {!hasGeminiApiKey ? (
-            <p className="mt-4 max-w-3xl rounded-btn border border-amber-400/50 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/30 dark:text-amber-200">
-              Ключ Gemini не найден. Добавь в <code className="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">.env.local</code> переменную{' '}
-              <code className="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">VITE_GOOGLE_API_KEY</code> (ключ из Google AI Studio) и перезапусти{' '}
-              <code className="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">npm run dev</code>. Старое имя{' '}
-              <code className="rounded bg-black/5 px-1.5 py-0.5 dark:bg-white/10">VITE_OPENROUTER_API_KEY</code> тоже подхватывается, если там лежит ключ Google.
-            </p>
-          ) : null}
         </div>
 
         <div className="relative mb-5 rounded-card border border-ingos-border bg-ingos-card/80 p-4 shadow-sm backdrop-blur-sm md:p-5">
@@ -476,7 +432,7 @@ function PersonalCasePage() {
         {personalAnalysis ? (
           <div className="mt-6 space-y-4 rounded-card border border-ingos-border bg-[var(--accent-muted)] p-5 md:p-6">
             {personalAnalysis.source === 'fallback' && personalAnalysis.fallbackReason ? (
-              <div className="rounded-btn border border-amber-400/50 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/30 dark:text-amber-200">
+              <div className="rounded-btn border border-amber-400/50 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/30 dark:text-amber-200">
                 {personalAnalysis.fallbackReason}
               </div>
             ) : null}
@@ -512,9 +468,6 @@ function PersonalCasePage() {
               </h3>
               <p className="whitespace-pre-line text-sm leading-relaxed text-ingos-text-primary md:text-base">
                 {personalAnalysis.caseBreakdown}
-              </p>
-              <p className="mt-2 text-xs text-ingos-text-secondary">
-                Источник ответа: {personalAnalysis.source === 'llm' ? 'LLM' : 'локальный учебный разбор'}
               </p>
             </div>
             <div className="flex justify-end">
@@ -557,8 +510,7 @@ function PersonalCasePage() {
         ) : null}
 
         <p className="mt-6 text-xs leading-relaxed text-ingos-text-secondary md:text-sm">
-          Подсказка: этот инструмент учебный и не заменяет официальную консультацию со страховой или
-          юристом.
+          Инструмент учебный и не заменяет консультацию страховой или юриста.
         </p>
         <div className="pointer-events-none absolute right-5 top-5 hidden rounded-2xl bg-white/60 p-2 text-[#0066CC] shadow-sm backdrop-blur-sm dark:bg-[#1a1a1a]/70 dark:text-[#00A3FF] md:block">
           <Bot className="h-6 w-6" />

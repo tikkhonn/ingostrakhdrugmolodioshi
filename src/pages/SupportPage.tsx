@@ -109,9 +109,6 @@ function SupportPage() {
             <Send className="h-4 w-4" />
             Перейти в Telegram-бот
           </a>
-          <p className="mt-2 text-xs text-ingos-text-secondary">
-            Если ссылка не настроена, укажи `VITE_SUPPORT_TELEGRAM_BOT_URL` в `.env.local`.
-          </p>
         </div>
       </motion.section>
 
